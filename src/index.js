@@ -91,11 +91,12 @@ function doDryRun(css: string) {
 function dryRunOrWriteFile(
   dryRun: boolean,
   filePath: string,
-  result: Object
+  result: Object,
+  args: Object
 ): Promise<any> {
   const { css } = result;
   return new Promise((resolve: Function): void =>
-    resolve(dryRun ? doDryRun(css) : writeCriticalFile(filePath, css))
+    resolve(dryRun ? doDryRun(css) : writeCriticalFile(filePath, css, args))
   );
 }
 
@@ -119,11 +120,11 @@ function hasNoOtherChildNodes(
  * @param {string} filePath Path to write file to.
  * @param {string} css CSS to write to file.
  */
-function writeCriticalFile(filePath: string, css: string) {
+function writeCriticalFile(filePath: string, css: string, args: Object) {
   fs.outputFile(
     filePath,
     css,
-    { flag: append ? "a" : "w" },
+    { flag: args.append ? (append ? "a" : "w") : "w" },
     (err: ?ErrnoError) => {
       append = true;
       if (err) {
@@ -154,6 +155,7 @@ function buildCritical(options: Object = {}): Function {
     preserve: true,
     minify: true,
     dryRun: false,
+    append: false,
     ...filteredOptions
   };
   append = false;

@@ -4,7 +4,7 @@ This plugin allows the user to define and output critical CSS using custom atRul
 
 ## Install
 
-`npm install postcss-critical-css --save`
+`npm install @meteora-digital/postcss-critical-css --save`
 
 ## Examples
 
@@ -199,9 +199,10 @@ Will output:
 
 The plugin takes a single object as its only parameter. The following properties are valid:
 
-| Arg          | Type      | Description                                                                                                                                                                           | Default                   |
-| ------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
-| `outputPath` | `string`  | Path to which critical CSS should be output                                                                                                                                           | Current working directory |
-| `outputDest` | `string`  | Default critical CSS file name                                                                                                                                                        | `"critical.css"`          |
-| `preserve`   | `boolean` | Whether or not to remove selectors from primary CSS document once they've been marked as critical. This should prevent duplication of selectors across critical and non-critical CSS. | `true`                    |
-| `minify`     | `boolean` | Minify output CSS?                                                                                                                                                                    | `true`                    |
+| Argument     | Data Type | Description                                                                                                                 | Default Value             |
+|--------------|-----------|-----------------------------------------------------------------------------------------------------------------------------|---------------------------|
+| outputPath   | string    | The path where the critical CSS should be output.                                                                           | Current working directory |
+| outputDest   | string    | The default name for the critical CSS file.                                                                                 | "critical.css"            |
+| preserve     | boolean   | If true, selectors from the primary CSS document are not removed even after being marked as critical. Prevents duplication. | true                      |
+| minify       | boolean   | If true, the output CSS will be minified.                                                                                   | true                      |
+| append       | boolean   | If true, each new entry that gets processed will be appended to the critical CSS file.                                      | false                     |
