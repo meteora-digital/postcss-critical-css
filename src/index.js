@@ -94,7 +94,7 @@ function dryRunOrWriteFile(
   result: Object,
   args: Object
 ): Promise<any> {
-  const { css } = result;
+  const css = result ? result.css : "";
   return new Promise((resolve: Function): void =>
     resolve(dryRun ? doDryRun(css) : writeCriticalFile(filePath, css, args))
   );

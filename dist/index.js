@@ -104,8 +104,7 @@ function doDryRun(css) {
  * @return {Promise} Resolves with writeCriticalFile or doDryRun function call.
  */
 function dryRunOrWriteFile(dryRun, filePath, result, args) {
-  var css = result.css;
-
+  var css = result ? result.css : "";
   return new Promise(function (resolve) {
     return resolve(dryRun ? doDryRun(css) : writeCriticalFile(filePath, css, args));
   });
