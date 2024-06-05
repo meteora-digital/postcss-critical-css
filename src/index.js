@@ -8,11 +8,6 @@ import path from "path";
 import { getCriticalRules } from "./getCriticalRules";
 
 /**
- * Append to an existing critical CSS file?
- */
-let append = false;
-
-/**
  * Clean the original root node passed to the plugin, removing custom atrules,
  * properties. Will additionally delete nodes as appropriate if
  * `preserve === false`.
@@ -91,12 +86,11 @@ function doDryRun(css: string) {
 function dryRunOrWriteFile(
   dryRun: boolean,
   filePath: string,
-  result: Object,
-  args: Object
+  result: Object
 ): Promise<any> {
-  const css = result ? result.css : "";
+  const { css } = result;
   return new Promise((resolve: Function): void =>
-    resolve(dryRun ? doDryRun(css) : writeCriticalFile(filePath, css, args))
+    resolve(dryRun ? doDryRun(css) : writeCriticalFile(filePath, css))
   );
 }
 
@@ -120,19 +114,13 @@ function hasNoOtherChildNodes(
  * @param {string} filePath Path to write file to.
  * @param {string} css CSS to write to file.
  */
-function writeCriticalFile(filePath: string, css: string, args: Object) {
-  fs.outputFile(
-    filePath,
-    css,
-    { flag: args.append ? (append ? "a" : "w") : "w" },
-    (err: ?ErrnoError) => {
-      append = true;
-      if (err) {
-        console.error(err);
-        process.exit(1);
-      }
+function writeCriticalFile(filePath: string, css: string) {
+  fs.outputFile(filePath, css, { flag: "w" }, (err: ?ErrnoError) => {
+    if (err) {
+      console.error(err);
+      process.exit(1);
     }
-  );
+  });
 }
 
 /**
@@ -155,10 +143,8 @@ function buildCritical(options: Object = {}): Function {
     preserve: true,
     minify: true,
     dryRun: false,
-    append: false,
     ...filteredOptions
   };
-  append = false;
   return (css: Object): Object => {
     const { dryRun, preserve, minify, outputPath, outputDest } = args;
     const criticalOutput = getCriticalRules(css, outputDest);
@@ -175,7 +161,7 @@ function buildCritical(options: Object = {}): Function {
             .process(criticalCSS, {
               from: undefined
             })
-            .then(dryRunOrWriteFile.bind(null, dryRun, filePath, args))
+            .then(dryRunOrWriteFile.bind(null, dryRun, filePath))
             .then(clean.bind(null, css, preserve))
         );
       },

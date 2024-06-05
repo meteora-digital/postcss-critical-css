@@ -4,7 +4,7 @@ This plugin allows the user to define and output critical CSS using custom atRul
 
 ## Install
 
-`npm install @meteora-digital/postcss-critical-css --save`
+`npm install meteora-digital/postcss-critical-css --save`
 
 ## Examples
 
@@ -205,4 +205,3 @@ The plugin takes a single object as its only parameter. The following properties
 | outputDest   | string    | The default name for the critical CSS file.                                                                                 | "critical.css"            |
 | preserve     | boolean   | If true, selectors from the primary CSS document are not removed even after being marked as critical. Prevents duplication. | true                      |
 | minify       | boolean   | If true, the output CSS will be minified.                                                                                   | true                      |
-| append       | boolean   | If true, each new entry that gets processed will be appended to the critical CSS file.                                      | false                     |

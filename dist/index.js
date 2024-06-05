@@ -27,11 +27,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 /**
- * Append to an existing critical CSS file?
- */
-var append = false;
-
-/**
  * Clean the original root node passed to the plugin, removing custom atrules,
  * properties. Will additionally delete nodes as appropriate if
  * `preserve === false`.
@@ -103,10 +98,11 @@ function doDryRun(css) {
  * @param {Object} result PostCSS root object.
  * @return {Promise} Resolves with writeCriticalFile or doDryRun function call.
  */
-function dryRunOrWriteFile(dryRun, filePath, result, args) {
-  var css = result ? result.css : "";
+function dryRunOrWriteFile(dryRun, filePath, result) {
+  var css = result.css;
+
   return new Promise(function (resolve) {
-    return resolve(dryRun ? doDryRun(css) : writeCriticalFile(filePath, css, args));
+    return resolve(dryRun ? doDryRun(css) : writeCriticalFile(filePath, css));
   });
 }
 
@@ -132,9 +128,8 @@ function hasNoOtherChildNodes() {
  * @param {string} filePath Path to write file to.
  * @param {string} css CSS to write to file.
  */
-function writeCriticalFile(filePath, css, args) {
-  _fsExtra2.default.outputFile(filePath, css, { flag: args.append ? append ? "a" : "w" : "w" }, function (err) {
-    append = true;
+function writeCriticalFile(filePath, css) {
+  _fsExtra2.default.outputFile(filePath, css, { flag: "w" }, function (err) {
     if (err) {
       console.error(err);
       process.exit(1);
@@ -159,10 +154,8 @@ function buildCritical() {
     outputDest: "critical.css",
     preserve: true,
     minify: true,
-    dryRun: false,
-    append: false
+    dryRun: false
   }, filteredOptions);
-  append = false;
   return function (css) {
     var dryRun = args.dryRun,
         preserve = args.preserve,
@@ -181,7 +174,7 @@ function buildCritical() {
       // @TODO Use from/to correctly.
       .process(criticalCSS, {
         from: undefined
-      }).then(dryRunOrWriteFile.bind(null, dryRun, filePath, args)).then(clean.bind(null, css, preserve));
+      }).then(dryRunOrWriteFile.bind(null, dryRun, filePath)).then(clean.bind(null, css, preserve));
     }, {});
   };
 }
