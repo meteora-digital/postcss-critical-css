@@ -182,7 +182,7 @@ function buildCritical() {
       // @TODO Use from/to correctly.
       .process(criticalCSS, {
         from: undefined
-      }).then(dryRunOrWriteFile.bind(null, dryRun, filePath)).then(clean.bind(null, css, preserve));
+      }).then(dryRunOrWriteFile.bind(null, dryRun, filePath, args)).then(clean.bind(null, css, preserve));
     }, {});
   };
 }

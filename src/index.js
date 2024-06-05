@@ -175,7 +175,7 @@ function buildCritical(options: Object = {}): Function {
             .process(criticalCSS, {
               from: undefined
             })
-            .then(dryRunOrWriteFile.bind(null, dryRun, filePath))
+            .then(dryRunOrWriteFile.bind(null, dryRun, filePath, args))
             .then(clean.bind(null, css, preserve))
         );
       },
