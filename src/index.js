@@ -48,13 +48,18 @@ function clean(root: Object, preserve: boolean) {
           }
         });
       }
-      let wrapper = {};
+      let wrapper = null;
       if (decl && decl.parent) {
         wrapper = decl.parent.parent;
         decl.parent.remove();
       }
       // If the wrapper has no valid child nodes, remove it entirely.
-      if (wrapper && hasNoOtherChildNodes(wrapper.nodes, decl)) {
+      if (
+        wrapper &&
+        wrapper.nodes &&
+        typeof wrapper.remove === "function" &&
+        hasNoOtherChildNodes(wrapper.nodes, decl)
+      ) {
         wrapper.remove();
       }
     } else {
@@ -170,4 +175,4 @@ function buildCritical(options: Object = {}): Function {
   };
 }
 
-module.exports = postcss.plugin("postcss-critical", buildCritical);
+module.exports = (postcss.plugin("postcss-critical", buildCritical): any);

@@ -1,31 +1,18 @@
 "use strict";
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 var _chalk = require("chalk");
-
-var _postcss = require("postcss");
-
-var _postcss2 = _interopRequireDefault(_postcss);
-
-var _cssnano = require("cssnano");
-
-var _cssnano2 = _interopRequireDefault(_cssnano);
-
-var _fsExtra = require("fs-extra");
-
-var _fsExtra2 = _interopRequireDefault(_fsExtra);
-
-var _path = require("path");
-
-var _path2 = _interopRequireDefault(_path);
-
+var _postcss = _interopRequireDefault(require("postcss"));
+var _cssnano = _interopRequireDefault(require("cssnano"));
+var _fsExtra = _interopRequireDefault(require("fs-extra"));
+var _path = _interopRequireDefault(require("path"));
 var _getCriticalRules = require("./getCriticalRules");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
+function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
+function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 /**
  * Clean the original root node passed to the plugin, removing custom atrules,
  * properties. Will additionally delete nodes as appropriate if
@@ -64,13 +51,13 @@ function clean(root, preserve) {
           }
         });
       }
-      var wrapper = {};
+      var wrapper = null;
       if (decl && decl.parent) {
         wrapper = decl.parent.parent;
         decl.parent.remove();
       }
       // If the wrapper has no valid child nodes, remove it entirely.
-      if (wrapper && hasNoOtherChildNodes(wrapper.nodes, decl)) {
+      if (wrapper && wrapper.nodes && typeof wrapper.remove === "function" && hasNoOtherChildNodes(wrapper.nodes, decl)) {
         wrapper.remove();
       }
     } else {
@@ -87,7 +74,7 @@ function clean(root, preserve) {
 function doDryRun(css) {
   console.log(
   // eslint-disable-line no-console
-  (0, _chalk.green)("Critical CSS result is: " + (0, _chalk.yellow)(css)));
+  (0, _chalk.green)("Critical CSS result is: ".concat((0, _chalk.yellow)(css))));
 }
 
 /**
@@ -100,7 +87,6 @@ function doDryRun(css) {
  */
 function dryRunOrWriteFile(dryRun, filePath, result) {
   var css = result.css;
-
   return new Promise(function (resolve) {
     return resolve(dryRun ? doDryRun(css) : writeCriticalFile(filePath, css));
   });
@@ -115,8 +101,7 @@ function dryRunOrWriteFile(dryRun, filePath, result) {
  */
 function hasNoOtherChildNodes() {
   var nodes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-  var node = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _postcss2.default.root();
-
+  var node = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : _postcss["default"].root();
   return nodes.filter(function (child) {
     return child !== node;
   }).length === 0;
@@ -129,7 +114,9 @@ function hasNoOtherChildNodes() {
  * @param {string} css CSS to write to file.
  */
 function writeCriticalFile(filePath, css) {
-  _fsExtra2.default.outputFile(filePath, css, { flag: "w" }, function (err) {
+  _fsExtra["default"].outputFile(filePath, css, {
+    flag: "w"
+  }, function (err) {
     if (err) {
       console.error(err);
       process.exit(1);
@@ -145,11 +132,10 @@ function writeCriticalFile(filePath, css) {
  */
 function buildCritical() {
   var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-
   var filteredOptions = Object.keys(options).reduce(function (acc, key) {
-    return typeof options[key] !== "undefined" ? _extends({}, acc, _defineProperty({}, key, options[key])) : acc;
+    return typeof options[key] !== "undefined" ? _objectSpread(_objectSpread({}, acc), {}, _defineProperty({}, key, options[key])) : acc;
   }, {});
-  var args = _extends({
+  var args = _objectSpread({
     outputPath: process.cwd(),
     outputDest: "critical.css",
     preserve: true,
@@ -158,19 +144,18 @@ function buildCritical() {
   }, filteredOptions);
   return function (css) {
     var dryRun = args.dryRun,
-        preserve = args.preserve,
-        minify = args.minify,
-        outputPath = args.outputPath,
-        outputDest = args.outputDest;
-
+      preserve = args.preserve,
+      minify = args.minify,
+      outputPath = args.outputPath,
+      outputDest = args.outputDest;
     var criticalOutput = (0, _getCriticalRules.getCriticalRules)(css, outputDest);
     return Object.keys(criticalOutput).reduce(function (init, cur) {
-      var criticalCSS = _postcss2.default.root();
-      var filePath = _path2.default.join(outputPath, cur);
+      var criticalCSS = _postcss["default"].root();
+      var filePath = _path["default"].join(outputPath, cur);
       criticalOutput[cur].each(function (rule) {
         return criticalCSS.append(rule.clone());
       });
-      return (0, _postcss2.default)(minify ? [_cssnano2.default] : [])
+      return (0, _postcss["default"])(minify ? [_cssnano["default"]] : [])
       // @TODO Use from/to correctly.
       .process(criticalCSS, {
         from: undefined
@@ -178,5 +163,4 @@ function buildCritical() {
     }, {});
   };
 }
-
-module.exports = _postcss2.default.plugin("postcss-critical", buildCritical);
+module.exports = _postcss["default"].plugin("postcss-critical", buildCritical);

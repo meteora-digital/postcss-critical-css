@@ -4,19 +4,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.getCriticalRules = getCriticalRules;
-
-var _postcss = require("postcss");
-
-var _postcss2 = _interopRequireDefault(_postcss);
-
+var _postcss = _interopRequireDefault(require("postcss"));
 var _getChildRules = require("./getChildRules");
-
 var _atRule = require("./atRule");
-
 var _getCriticalDestination = require("./getCriticalDestination");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 /**
  * Clean a root node of a declaration.
  *
@@ -26,7 +18,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 function clean(root) {
   var test = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "critical-selector";
-
   var clone = root.clone();
   if (clone.type === "decl") {
     clone.remove();
@@ -45,13 +36,13 @@ function clean(root) {
  * @return {Object} sortedRoot Root with nodes sorted by source order.
  */
 function correctSourceOrder(root) {
-  var sortedRoot = _postcss2.default.root();
+  var sortedRoot = _postcss["default"].root();
   var clone = root.clone();
   clone.walkRules(function (rule) {
     var start = rule.source.start.line;
     if (rule.parent.type === "atrule") {
       var child = rule;
-      rule = _postcss2.default.atRule({
+      rule = _postcss["default"].atRule({
         name: rule.parent.name,
         params: rule.parent.params
       }).append(rule.clone());
@@ -75,7 +66,7 @@ function correctSourceOrder(root) {
  * @return {Object} A new root node with an atrule at its base.
  */
 function establishContainer(node) {
-  return node.parent.type === "atrule" && node.parent.name !== "critical" ? _postcss2.default.atRule({
+  return node.parent.type === "atrule" && node.parent.name !== "critical" ? _postcss["default"].atRule({
     name: node.parent.name,
     type: node.parent.type,
     params: node.parent.params,
@@ -111,27 +102,26 @@ function updateCritical(root, update) {
  * @return {object} Object containing critical rules, organized by output destination
  */
 function getCriticalRules(css, defaultDest) {
-  var critical = (0, _atRule.getCriticalFromAtRule)({ css: css, defaultDest: defaultDest });
+  var critical = (0, _atRule.getCriticalFromAtRule)({
+    css: css,
+    defaultDest: defaultDest
+  });
   css.walkDecls("critical-selector", function (decl) {
     var parent = decl.parent,
-        value = decl.value;
-
+      value = decl.value;
     var dest = (0, _getCriticalDestination.getCriticalDestination)(parent, defaultDest);
     var container = establishContainer(parent);
     var childRules = value === "scope" ? (0, _getChildRules.getChildRules)(css, parent) : [];
     // Sanity check, make sure we've got a root node
-    critical[dest] = critical[dest] || _postcss2.default.root();
-
+    critical[dest] = critical[dest] || _postcss["default"].root();
     switch (value) {
       case "scope":
         // Add all child rules
         var criticalRoot = childRules.reduce(function (acc, rule) {
           return acc.append(rule.clone());
         }, critical[dest].append(container));
-
         critical[dest] = clean(correctSourceOrder(criticalRoot));
         break;
-
       default:
         critical[dest] = updateCritical(critical[dest], container);
         break;

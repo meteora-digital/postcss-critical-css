@@ -4,8 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.matchChild = matchChild;
-
-
 /**
  * Get rules for selectors nested within parent node
  *
@@ -13,6 +11,6 @@ exports.matchChild = matchChild;
  * @return {object} Parent rule for which children should be included
  */
 function matchChild(parent, rule) {
-  var childRegExp = new RegExp("(, )?(" + parent.selector + " [^,s]*),?.*"); // eslint-disable-line no-useless-escape
+  var childRegExp = new RegExp("(, )?(".concat(parent.selector, " [^,s]*),?.*")); // eslint-disable-line no-useless-escape
   return rule.selector !== parent.selector && rule.selector.match(childRegExp) !== null;
 }

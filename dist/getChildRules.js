@@ -4,15 +4,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.getChildRules = getChildRules;
-
-var _postcss = require("postcss");
-
-var _postcss2 = _interopRequireDefault(_postcss);
-
+var _postcss = _interopRequireDefault(require("postcss"));
 var _matchChild = require("./matchChild");
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
+function _interopRequireDefault(e) { return e && e.__esModule ? e : { "default": e }; }
 /**
  * Get rules for selectors nested within parent node
  *
@@ -37,7 +31,7 @@ function getChildRules(css, parent) {
     atRule.walkRules(selectorRegExp, function (rule) {
       var childRule = (0, _matchChild.matchChild)(parent, rule);
       // Create new at-rule to append only necessary selector to critical
-      var criticalAtRule = _postcss2.default.atRule({
+      var criticalAtRule = _postcss["default"].atRule({
         name: atRule.name,
         params: atRule.params
       });
@@ -45,13 +39,12 @@ function getChildRules(css, parent) {
        * Should append even if parent selector, but make sure the two rules
        * aren't identical.
        */
-      if ((rule.selector === parent.selector || childRule) && _postcss2.default.parse(rule).toString() !== _postcss2.default.parse(parent).toString()) {
+      if ((rule.selector === parent.selector || childRule) && _postcss["default"].parse(rule).toString() !== _postcss["default"].parse(parent).toString()) {
         var clone = rule.clone();
         criticalAtRule.append(clone);
         result.push(criticalAtRule);
       }
     });
   });
-
   return result;
 }
