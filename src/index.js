@@ -175,4 +175,4 @@ function buildCritical(options: Object = {}): Function {
   };
 }
 
-module.exports = (postcss.plugin("postcss-critical", buildCritical): any);
+module.exports = buildCritical;

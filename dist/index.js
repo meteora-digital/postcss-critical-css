@@ -163,4 +163,4 @@ function buildCritical() {
     }, {});
   };
 }
-module.exports = _postcss["default"].plugin("postcss-critical", buildCritical);
+module.exports = buildCritical;
